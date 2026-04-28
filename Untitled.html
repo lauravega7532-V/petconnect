@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>VetConnect — Mascotas y Veterinarios</title>
+  <!-- Fuentes y recursos -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,500;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fdfcf0 0%, #f1e4c3 100%);
+      color: #2d1f00;
+      padding: 1.5rem;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1e4c3;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e9c46a;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #e76f51;
+    }
+
+    /* contenedor principal */
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(255, 253, 245, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 3rem;
+      padding: 1.8rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 215, 130, 0.4);
+      transition: all 0.2s;
+    }
+
+    /* header llamativo */
+    .hero {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #e15554, #e9a23b, #3b8c6e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      display: inline-block;
+      letter-spacing: -1px;
+      text-shadow: 4px 4px 12px rgba(0,0,0,0.1);
+    }
+    .hero p {
+      font-weight: 500;
+      background: #2e3820a0;
+      display: inline-block;
+      padding: 0.4rem 1.8rem;
+      border-radius: 60px;
+      backdrop-filter: blur(4px);
+      color: #1e2a0c;
+      font-size: 1.1rem;
+    }
+
+    /* grid principal: dos columnas flex */
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    .col {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    /* estilos tarjetas general */
+    .card-section {
+      background: #fffef7;
+      border-radius: 2rem;
+      padding: 1.6rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+      border: 1px solid #ffdd99;
+    }
+    .card-section:hover {
+      transform: translateY(-5px);
+    }
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      border-left: 8px solid #f4a261;
+      padding-left: 1rem;
+    }
+    .section-title i {
+      color: #e76f51;
+      font-size: 1.8rem;
+    }
+
+    /* Mascotas grid interactivo */
+    .pets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1.3rem;
+    }
+    .pet-card {
+      background: linear-gradient(145deg, #fff2df, #ffe6c7);
+      border-radius: 2rem;
+      padding: 1.2rem 0.8rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      border: 1px solid #ffd5a4;
+      position: relative;
+      overflow: hidden;
+    }
+    .pet-card:active {
+      transform: scale(0.96);
+    }
+    .pet-card.speaking {
+      animation: pulse-border 0.5s infinite alternate;
+      background: #ffe2b5;
+      border-color: #e76f51;
+    }
+
+    .pet-card i {
+      font-size: 3.8rem;
+      filter: drop-shadow(2px 6px 10px rgba(0,0,0,0.2));
+      transition: all 0.1s;
+    }
+    .pet-card h3 {
+      font-size: 1.5rem;
+      margin: 0.7rem 0 0.3rem;
+      font-weight: 800;
+    }
+    .pet-card .sound-badge {
+      background: #f4a261;
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: white;
+      margin-top: 0.4rem;
+    }
+    .pet-card:hover {
+      background: #ffe2b5;
+      transform: translateY(-6px);
+    }
+
+    /* veterinarios */
+    .vets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.3rem;
+    }
+    .vet-card {
+      background: #ffffffdb;
+      border-radius: 1.8rem;
+      padding: 1rem;
+      text-align: center;
+      backdrop-filter: blur(2px);
+      transition: all 0.2s;
+      border: 1px solid #fcd48d;
+    }
+    .vet-avatar {
+      background: #e9c46a;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.8rem;
+      font-size: 2.3rem;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(233, 196, 106, 0.4);
+    }
+    .vet-card:hover .vet-avatar {
+      transform: rotate(10deg) scale(1.1);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .vet-card h4 {
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+    .btn-vet {
+      background: #2a9d8f;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      color: white;
+      margin-top: 0.8rem;
+      cursor: pointer;
+      transition: 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-vet:active {
+      transform: scale(0.96);
+      background: #1e6f64;
+    }
+
+    /* mapa estilizado y citas */
+    .map-sim {
+      background: #90be6d;
+      background-image: radial-gradient(circle at 20% 40%, #a7c957 2%, transparent 2.5%);
+      background-size: 28px 28px;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      position: relative;
+      height: 220px;
+      margin-bottom: 1.2rem;
+      border: 3px solid #f8f3e2;
+      box-shadow: inset 0 0 0 2px #ffe1a0;
+    }
+    .map-marker {
+      position: absolute;
+      background: #e76f51;
+      color: white;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 8px black;
+    }
+    .map-marker i {
+      margin-right: 5px;
+    }
+    .citas-list {
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .cita-item {
+      background: #ffffff;
+      border-radius: 1.2rem;
+      padding: 0.7rem 1rem;
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border: 1px solid #ffedcc;
+      animation: slideIn 0.3s ease-out;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .cita-info strong {
+      color: #bc6c25;
+    }
+    .btn-cancel {
+      background: #e63946;
+      border: none;
+      color: white;
+      padding: 0.2rem 1rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .btn-cancel:hover {
+      background: #bd2130;
+    }
+
+    /* modal flotante */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
+    }
+    .modal-active {
+      visibility: visible;
+      opacity: 1;
+    }
+    .modal-card {
+      background: #fff7e8;
+      border-radius: 2rem;
+      padding: 1.8rem;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      border: 2px solid #f4a261;
+    }
+    .pet-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 1rem 0;
+    }
+    .pet-option {
+      background: #ffe0b5;
+      padding: 0.5rem;
+      border-radius: 3rem;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .pet-option:hover {
+      background: #f4a261;
+      color: white;
+    }
+
+    .close-modal {
+      background: #bc6c25;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      color: white;
+      margin-top: 0.5rem;
+    }
+
+    /* botón global */
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d1f00e6;
+      color: #ffefcf;
+      padding: 0.8rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      z-index: 1100;
+      pointer-events: none;
+      transition: 0.2s;
+      opacity: 0;
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #755c2e;
+    }
+
+    /* Animaciones */
+    @keyframes pulse-border {
+      from { box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.4); }
+      to { box-shadow: 0 0 0 15px rgba(231, 111, 81, 0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (max-width: 780px) {
+      body { padding: 1rem; }
+      .hero h1 { font-size: 2rem; }
+      .section-title { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="hero">
+    <h1><i class="fas fa-paw"></i> VetConnect <i class="fas fa-stethoscope"></i></h1>
+    <p>🎤 ¡Toca cualquier mascota y escucha su sonido real! 🐾</p>
+  </div>
+
+  <div class="dashboard">
+    <!-- COLUMNA IZQUIERDA: MASCOTAS INTERACTIVAS + VET -->
+    <div class="col">
+      <!-- SECCIÓN MASCOTAS (con sonido al oprimir) -->
+      <div class="card-section">
+        <div class="section-title">
+          <i class="fas fa-dog"></i>
+          <span>🐕 Mis Compañeros 🐈</span>
+        </div>
+        <div class="pets-grid" id="petsGrid">
+          <!-- datos desde js -->
+        </div>
+        <p style="font-size:0.75rem; margin-top:1rem; text-align:center;"><i class="fas fa-volume-up"></i> Haz clic en cualquier mascota → reproduce su sonido característico</p>
+      </div>
+
+      <!-- VETERINARIOS disponibles para agendar relación -->
+      <div class="card-section">
+        <div class="section-title">
+          <i class="fas fa-user-md"></i>
+          <span>👩‍⚕️ Veterinarios Aliados</span>
+        </div>
+        <div class="vets-grid" id="vetsGrid"></div>
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: MAPA + AGENDAMIENTO -->
+    <div class="col">
+      <!-- Mapa interactivo de clínicas -->
+      <div class="card-section">
+        <div class="section-title">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>📍 Mapa de Clínicas</span>
+        </div>
+        <div class="map-sim" id="mockMap">
+          <!-- marcadores colocados dinámicamente con posiciones -->
+        </div>
+        <p style="font-size:0.7rem; margin-top:6px;"><i class="fas fa-info-circle"></i> Pasa el mouse sobre los marcadores para ver la clínica</p>
+      </div>
+
+      <!-- Citas programadas (relación mascota-veterinario) -->
+      <div class="card-section">
+        <div class="section-title">
+          <i class="fas fa-calendar-check"></i>
+          <span>📅 Citas & Relaciones</span>
+        </div>
+        <div id="citasContainer" class="citas-list">
+          <!-- lista dinámica -->
+          <div style="text-align:center; color:#ab8e54;">Agenda una cita para relacionar tu mascota con un veterinario</div>
+        </div>
+        <button id="limpiarHistorial" style="background:#bb9457; border:none; border-radius:30px; padding:0.3rem 1rem; margin-top:12px; cursor:pointer;"><i class="fas fa-trash-alt"></i> Limpiar historial</button>
+      </div>
+    </div>
+  </div>
+  <footer>🐶 ¡Interacción total! Presiona las tarjetas de mascotas → sonido real. Agenda citas entre veterinarios y tus mascotas.</footer>
+</div>
+
+<!-- Modal para seleccionar mascota al agendar cita con veterinario -->
+<div id="modalAgenda" class="modal-overlay">
+  <div class="modal-card">
+    <i class="fas fa-heartbeat" style="font-size:2rem; color:#e76f51;"></i>
+    <h3 style="margin:8px 0">🐾 Elegir mascota</h3>
+    <p id="modalVetName" style="font-weight:bold;">Veterinario:</p>
+    <div id="petOptionsList" class="pet-selector"></div>
+    <button class="close-modal" id="closeModalBtn">Cancelar</button>
+  </div>
+</div>
+<div id="toastMsg" class="toast-msg">✨</div>
+
+<script>
+  // -------- DEFINICIÓN DE DATOS ----------
+  // Lista de mascotas (sonidos y emojis)
+  const petsData = [
+    { id: 'perro', name: 'Perro', icon: 'fas fa-dog', soundText: '¡Guau guau! 🐕', emojiSound: 'ladrido' },
+    { id: 'gato', name: 'Gato', icon: 'fas fa-cat', soundText: '¡Miaaauuu! 🐈', emojiSound: 'maullido' },
+    { id: 'conejo', name: 'Conejo', icon: 'fas fa-rabbit', soundText: '¡Chas chas! 🐇', emojiSound: 'saltito' },
+    { id: 'loro', name: 'Loro', icon: 'fas fa-parrot', soundText: '¡Hola! ¡Pío pío! 🦜', emojiSound: 'charla' }
+  ];
+
+  // Veterinarios
+  const vetsData = [
+    { id: 1, name: 'Dra. Valeria López', specialty: '🐕 Etología canina', icon: 'fa-user-graduate', location: 'Clínica Patitas' },
+    { id: 2, name: 'Dr. Miguel Fuentes', specialty: '🐈 Medicina felina', icon: 'fa-stethoscope', location: 'Felix Centro' },
+    { id: 3, name: 'Dra. Sofía Ríos', specialty: '🦜 Exóticos & Aves', icon: 'fa-tree', location: 'ExoVet' }
+  ];
+
+  // Array de citas (relación mascota + veterinario)
+  let appointments = JSON.parse(localStorage.getItem('vet_appointments')) || [
+    { id: 'c1', petName: 'Perro', vetName: 'Dra. Valeria López', date: new Date().toLocaleString() }
+  ];
+
+  function saveAppointments() {
+    localStorage.setItem('vet_appointments', JSON.stringify(appointments));
+  }
+
+  // Variables para el modal
+  let currentVetForAppointment = null;
+
+  // ---------- FUNCIONES DE SONIDO (speech synthesis con efecto) ----------
+  let synth = window.speechSynthesis;
+  function playPetSound(pet) {
+    if (synth.speaking || synth.pending) {
+      synth.cancel();
+    }
+    
+    const card = document.querySelector(`.pet-card[data-pet-id="${pet.id}"]`);
+    card.classList.add('speaking');
+
+    let utterance = new SpeechSynthesisUtterance(pet.soundText);
+    utterance.rate = 1.0;
+    utterance.pitch = pet.id === 'perro' ? 0.8 : 1.2; // Tono más bajo para perros
+    utterance.lang = 'es-ES';
+    
+    utterance.onend = () => {
+      card.classList.remove('speaking');
+    };
+
+    synth.speak(utterance);
+    showToast(`🔊 ${pet.name}: ${pet.soundText}`, 1000);
+  }
+
+  // Toast flotante
+  function showToast(msg, duration = 1500) {
+    const toast = document.getElementById('toastMsg');
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => {
+      toast.style.opacity = '0';
+    }, duration);
+  }
+
+  // Renderizar MASCOTAS (con evento click que reproduce sonido)
+  function renderPets() {
+    const petsGrid = document.getElementById('petsGrid');
+    petsGrid.innerHTML = '';
+    petsData.forEach(pet => {
+      const petCard = document.createElement('div');
+      petCard.className = 'pet-card';
+      petCard.setAttribute('data-pet-id', pet.id);
+      petCard.innerHTML = `
+        <i class="${pet.icon}" style="font-size:3.5rem; color:#b45f2b;"></i>
+        <h3>${pet.name}</h3>
+        <div class="sound-badge"><i class="fas fa-music"></i> 🔊 click</div>
+      `;
+      // AL OPRIMIR LA TARJETA -> SONIDO DE ESA MASCOTA
+      petCard.addEventListener('click', (e) => {
+        e.stopPropagation();
+        playPetSound(pet);
+        // Añadir animación extra
+        petCard.style.transform = 'scale(0.95)';
+        setTimeout(() => { petCard.style.transform = ''; }, 120);
+      });
+      petsGrid.appendChild(petCard);
+    });
+  }
+
+  // Renderizar lista de veterinarios con botón que abre modal para asignar mascota
+  function renderVets() {
+    const vetsGrid = document.getElementById('vetsGrid');
+    vetsGrid.innerHTML = '';
+    vetsData.forEach(vet => {
+      const vetCard = document.createElement('div');
+      vetCard.className = 'vet-card';
+      vetCard.innerHTML = `
+        <div class="vet-avatar"><i class="fas ${vet.icon}"></i></div>
+        <h4>${vet.name}</h4>
+        <p style="font-size:0.8rem;">${vet.specialty}</p>
+        <p><i class="fas fa-map-pin"></i> ${vet.location}</p>
+        <button class="btn-vet" data-vet-id="${vet.id}"><i class="fas fa-calendar-plus"></i> Agendar cita</button>
+      `;
+      const btn = vetCard.querySelector('.btn-vet');
+      btn.addEventListener('mouseenter', () => {
+        btn.style.transform = 'translateY(-2px)';
+      });
+      btn.addEventListener('mouseleave', () => btn.style.transform = 'translateY(0)');
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Abrir modal para elegir mascota y crear relación
+        currentVetForAppointment = vet;
+        openModalForVet(vet);
+      });
+      vetsGrid.appendChild(vetCard);
+    });
+  }
+
+  // Modal para seleccionar mascota y crear la cita (relación)
+  function openModalForVet(vet) {
+    const modal = document.getElementById('modalAgenda');
+    const modalVetName = document.getElementById('modalVetName');
+    const petOptionsDiv = document.getElementById('petOptionsList');
+    modalVetName.innerHTML = `<i class="fas fa-stethoscope"></i> ${vet.name}  ·  ${vet.specialty}`;
+    // Crear opciones de mascotas disponibles
+    petOptionsDiv.innerHTML = '';
+    petsData.forEach(pet => {
+      const option = document.createElement('div');
+      option.className = 'pet-option';
+      option.innerHTML = `<i class="${pet.icon}"></i> ${pet.name}`;
+      option.addEventListener('click', () => {
+        // Crear nueva cita relacionando mascota con este veterinario
+        createAppointment(pet.name, vet.name);
+        closeModal();
+        showToast(`✅ Cita agendada: ${pet.name} con ${vet.name}`, 1800);
+      });
+      petOptionsDiv.appendChild(option);
+    });
+    modal.classList.add('modal-active');
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('modalAgenda');
+    modal.classList.remove('modal-active');
+    currentVetForAppointment = null;
+  }
+
+  // Crear cita y actualizar lista
+  function createAppointment(petName, vetName) {
+    const newId = 'app_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    const now = new Date();
+    // Fecha futura random +1 a 7 días
+    const futureDate = new Date(now);
+    futureDate.setDate(now.getDate() + Math.floor(Math.random() * 5) + 1);
+    futureDate.setHours(10 + Math.floor(Math.random() * 8), 0, 0);
+    const dateStr = futureDate.toLocaleString();
+    const newApp = {
+      id: newId,
+      petName: petName,
+      vetName: vetName,
+      date: dateStr
+    };
+    appointments.unshift(newApp); // más reciente arriba
+    saveAppointments();
+    renderAppointments();
+    // Sonido de confirmación opcional (no interfiere)
+    // Podriamos dar un pequeño mensaje de éxito sin sonido de mascota
+  }
+
+  // Renderizar citas (relaciones)
+  function renderAppointments() {
+    const container = document.getElementById('citasContainer');
+    if (!appointments.length) {
+      container.innerHTML = '<div style="text-align:center; background:#ffffff; border:1px dashed #f4a261; padding:2rem; border-radius:1.5rem; color:#f4a261"><i class="fas fa-calendar-day" style="font-size:2rem; margin-bottom:10px"></i><br>¡Todo libre! Agenda una cita arriba.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    appointments.forEach(app => {
+      const citaDiv = document.createElement('div');
+      citaDiv.className = 'cita-item';
+      citaDiv.innerHTML = `
+        <div class="cita-info">
+          <i class="fas fa-paw"></i> <strong>${app.petName}</strong> 
+          <i class="fas fa-arrow-right"></i> 
+          <i class="fas fa-user-md"></i> ${app.vetName}<br>
+          <small><i class="far fa-calendar-alt"></i> ${app.date}</small>
+        </div>
+        <button class="btn-cancel" data-id="${app.id}"><i class="fas fa-times-circle"></i> Cancelar</button>
+      `;
+      const cancelBtn = citaDiv.querySelector('.btn-cancel');
+      cancelBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        appointments = appointments.filter(a => a.id !== app.id);
+        saveAppointments();
+        renderAppointments();
+        showToast(`❌ Cita cancelada (${app.petName} / ${app.vetName})`, 1300);
+      });
+      container.appendChild(citaDiv);
+    });
+  }
+
+  // Simular mapa (clínicas con puntos interactivos)
+  function renderMockMap() {
+    const mapContainer = document.getElementById('mockMap');
+    mapContainer.innerHTML = ''; 
+    mapContainer.style.position = 'relative';
+    // Crear 3 puntos de clínicas con posiciones relativas al contenedor
+    const clinics = [
+      { name: '🏥 Clínica Patitas', left: '20%', top: '30%', icon: 'fa-hospital-user', direccion: 'Av. Siempre Viva 123' },
+      { name: '🐾 Felix Centro', left: '65%', top: '60%', icon: 'fa-clinic-medical', direccion: 'Calle de los Felinos 456' },
+      { name: '🦜 ExoVet Especialistas', left: '40%', top: '75%', icon: 'fa-microscope', direccion: 'Ruta 8 km 22' }
+    ];
+    clinics.forEach(clinic => {
+      const marker = document.createElement('div');
+      marker.className = 'map-marker';
+      marker.style.left = clinic.left;
+      marker.style.top = clinic.top;
+      marker.style.position = 'absolute';
+      marker.style.cursor = 'pointer';
+      marker.innerHTML = `<i class="fas ${clinic.icon}"></i> 📍`;
+      marker.title = `${clinic.name} - ${clinic.direccion}`;
+      // tooltip mejorado con hover
+      let tooltipSpan = document.createElement('span');
+      marker.addEventListener('mouseenter', () => {
+        showToast(`${clinic.name} · ${clinic.direccion}`, 1200);
+      });
+      mapContainer.appendChild(marker);
+    });
+    // añadir fondo decorativo
+    const infoSpan = document.createElement('div');
+    infoSpan.style.position = 'absolute';
+    infoSpan.style.bottom = '5px';
+    infoSpan.style.right = '10px';
+    infoSpan.style.fontSize = '0.6rem';
+    infoSpan.style.backgroundColor = '#ffffffaa';
+    infoSpan.style.padding = '2px 6px';
+    infoSpan.style.borderRadius = '20px';
+    infoSpan.innerHTML = '📍 Marcadores interactivos';
+    mapContainer.appendChild(infoSpan);
+  }
+
+  // Limpiar historial de citas
+  function setupCleanButton() {
+    const cleanBtn = document.getElementById('limpiarHistorial');
+    cleanBtn.addEventListener('click', () => {
+      if (appointments.length === 0) {
+        showToast('No hay citas para eliminar', 1000);
+        return;
+      }
+      appointments = [];
+      saveAppointments();
+      renderAppointments();
+      showToast('🧹 Historial de citas limpiado', 1400);
+    });
+  }
+
+  // Adicional: si se quiere animación al inicio, pre-cargar mensaje
+  function init() {
+    renderPets();
+    renderVets();
+    renderAppointments();
+    renderMockMap();
+    setupCleanButton();
+
+    // cerrar modal al hacer click en overlay o botón
+    const modal = document.getElementById('modalAgenda');
+    const closeBtn = document.getElementById('closeModalBtn');
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // mostrar breve mensaje de bienvenida
+    setTimeout(() => {
+      showToast('🎉 ¡Bienvenido! Toca cualquier mascota para escuchar su sonido.', 2500);
+    }, 300);
+  }
+
+  // Inicializar toda la app
+  init();
+</script>
+</body>
+</html>
